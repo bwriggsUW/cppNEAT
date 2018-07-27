@@ -6,20 +6,19 @@
 #include<string>
 #include<iostream>
 
-Genome::Genome(std::vector<Node*> pNodeGenes, std::vector<Connection*> pConnectionGenes) 
-	: nodeGenes(pNodeGenes), connectionGenes(pConnectionGenes){
+Genome::Genome(std::vector<Node*> pNodeGenes, std::vector<Connection*> pConnectionGenes, std::default_random_engine& pGen)
+	: nodeGenes(pNodeGenes), connectionGenes(pConnectionGenes), gen(pGen){
 	numInnovs = pNodeGenes.size() + pConnectionGenes.size();
 	numNodes = pNodeGenes.size();
 }
 
-Genome::Genome(int numInputs, int numOutputs){
+Genome::Genome(int numInputs, int numOutputs, std::default_random_engine& pGen) : gen(pGen){
 	this->nodeGenes.resize(numInputs + numOutputs);
 	this->connectionGenes.resize(numInputs * numOutputs);
 	this->numInnovs = 0;
 	this->numNodes = 0;
 		
-	std::random_device rd;
-	std::default_random_engine gen(rd());
+	this->gen.discard(10000);
 	std::uniform_real_distribution<float> distr(-1.0, 1.0);
 
 	for(int i = 0; i < numInputs + numOutputs; i++){
@@ -27,7 +26,8 @@ Genome::Genome(int numInputs, int numOutputs){
 	}
 	for(int i = 0; i < numInputs; i++){
 		for(int j = 0; j < numOutputs; j++){
-			this->connectionGenes[i * numOutputs + j] = new Connection(i, numInputs + j, distr(gen), true, this->numInnovs++);
+			this->connectionGenes[i * numOutputs + j] = 
+				new Connection(i, numInputs + j, distr(this->gen), true, this->numInnovs++);
 		}
 	}	
 }
@@ -46,11 +46,10 @@ void Genome::addNode(){
 		}
 	}
 
-	std::random_device rd;
-	std::default_random_engine gen(rd());
+	this->gen.discard(10000);
 	std::uniform_int_distribution<int> distr(0, enabledIndices.size() - 1);
 
-	connectionToSplit = distr(gen);
+	connectionToSplit = distr(this->gen);
 	int from, to;
 	float weight;
 	from = this->connectionGenes[connectionToSplit]->fromId;
@@ -64,17 +63,39 @@ void Genome::addNode(){
 }
 
 void Genome::addConnection(){
-	std::random_device rd;
-	std::default_random_engine gen(rd());
+	this->gen.discard(10000);
 	std::uniform_int_distribution<int> distr1(0, this->numNodes - 1);
 	std::uniform_int_distribution<int> distr2(0, this->numNodes - 2);
 	std::uniform_real_distribution<float> distr3(-1.0, 1.0);
 	
-	int node1 = distr1(gen);
-	int node2 = distr2(gen);
+	int node1 = distr1(this->gen);
+	int node2 = distr2(this->gen);
 	if(node2 >= node1) node2++;
 
-	this->connectionGenes.push_back(new Connection(node1, node2, distr3(gen), true, this->numInnovs++));
+	this->connectionGenes.push_back(new Connection(node1, node2, distr3(this->gen), true, this->numInnovs++));
+}
+
+void Genome::stdMutateWeight(float min, float max){
+	this->gen.discard(10000);
+	std::uniform_int_distribution<int> distr1(0, this->connectionGenes.size() - 1);
+	std::uniform_real_distribution<float> distr2(min, max);
+
+	int mutCon = distr1(this->gen); 
+	this->connectionGenes[mutCon]->weight *= distr2(this->gen);
+	float tempWeight = this->connectionGenes[mutCon]->weight;  
+	if(tempWeight < -1.0){
+		this->connectionGenes[mutCon]->weight = -1.0;
+	}else if(tempWeight > 1.0){
+		this->connectionGenes[mutCon]->weight = 1.0;
+	}
+}
+
+void Genome::rndMutateWeight(){
+	this->gen.discard(10000);
+	std::uniform_int_distribution<int> distr1(0, this->connectionGenes.size() - 1);
+	std::uniform_real_distribution<float> distr2(-1.0, 1.0);
+	
+	this->connectionGenes[distr1(this->gen)]->weight = distr2(this->gen);
 }
 
 int max(int a, int b){

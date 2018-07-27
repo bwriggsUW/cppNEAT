@@ -4,11 +4,12 @@
 #include "node.h"
 #include "connection.h"
 #include<vector>
+#include<random>
 
 class Genome{
 	public:
-		Genome(std::vector<Node*> pNodeGenes, std::vector<Connection*> pConnectionGenes);
-		Genome(int numInputs, int numOutputs);
+		Genome(std::vector<Node*> pNodeGenes, std::vector<Connection*> pConnectionGenes, std::default_random_engine& pGen);
+		Genome(int numInputs, int numOutputs, std::default_random_engine& pGen);
 		~Genome();
 
 		void addNode();
@@ -26,7 +27,7 @@ class Genome{
 		std::vector<Connection*> connectionGenes;
 		int numInnovs;
 		int numNodes;
-
+		std::default_random_engine gen;
 };
 
 #endif
