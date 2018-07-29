@@ -1,6 +1,5 @@
-//#include "../headers/gene.h"
 //#include "../headers/node.h"
-//#include "../headers/connection.h"
+#include "../headers/connection.h"
 
 #include<iostream>
 #include<vector>
@@ -22,17 +21,64 @@ unsigned long long int getSeed(){
 
 int main(int argc, char* argv[]){
 	std::default_random_engine gen(getSeed());
-	Genome* genome = new Genome(2,1,gen);
-	genome->info();
-	genome->addNode();
-	genome->info();
-	genome->addConnection();
-	genome->info();
-	genome->stdMutateWeight(0.5, 1.5);
-	genome->info();
-	genome->rndMutateWeight();
-	genome->info();
-	delete genome;
+	
+	Genome* genome1 = new Genome(2,1,gen);
+	Genome* genome2 = new Genome(2,1,gen);
+
+	std::cout << "genome1:" << std::endl;
+	genome1->info();
+	std::cout << std::endl;
+	std::cout << "genome2:" << std::endl;
+	genome2->info();
+	std::cout << std::endl;
+
+	ConnectionDesc* cd = new ConnectionDesc;
+	int connectionToSplit = genome1->posOfRndCon(cd);
+	genome1->mutateAddNode(connectionToSplit, 2);
+	connectionToSplit = genome2->posOfRndCon(cd);
+	genome2->mutateAddNode(connectionToSplit, 4);
+
+	std::cout << "genome1 + one node:" << std::endl;
+	genome1->info();
+	std::cout << std::endl;
+	std::cout << "genome2 + one node:" << std::endl;
+	genome2->info();
+	std::cout << std::endl;
+
+	genome1->rndCon(cd);
+	if((cd->fromId >= 0) and (cd->toId >= 0)){
+		genome1->mutateAddConnection(cd, 6);
+	}else{
+		std::cout << "already fully connected" << std::endl;
+	}
+	genome2->rndCon(cd);
+	if((cd->fromId >= 0) and (cd->toId >= 0)){
+		genome2->mutateAddConnection(cd, 7);
+	}else{
+		std::cout << "already fully connected" << std::endl;
+	}
+
+	std::cout << "genome1 + one node + one connection:" << std::endl;
+	genome1->info();
+	std::cout << std::endl;
+	std::cout << "genome2 + one node + one connection:" << std::endl;
+	genome2->info();
+	std::cout << std::endl;
+
+	genome1->rndMutateWeight();
+	genome2->stdMutateWeight(0.5,1.5);
+
+	std::cout << "genome1 + one node + one connection + one random weight mutation:" << std::endl;
+	genome1->info();
+	std::cout << std::endl;
+	std::cout << "genome2 + one node + one connection + one standard weight mutation:" << std::endl;
+	genome2->info();
+	std::cout << std::endl;
+
+	delete genome1;
+	delete genome2;
+	delete cd;
+	
 	return 0;
 }
 

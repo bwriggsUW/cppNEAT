@@ -16,4 +16,11 @@ class Connection{
 		int innovNum;
 };
 
+struct ConnectionDesc{
+	int fromId;
+	int toId;
+
+	ConnectionDesc& operator =(const Connection& con);
+};
+
 #endif

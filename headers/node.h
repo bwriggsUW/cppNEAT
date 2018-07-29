@@ -6,8 +6,7 @@
 class Node{
 	public:
 		enum Type{INPUT, HIDDEN, OUTPUT};
-		Node(int pId, Node::Type pType, int pInnovNum);
-		Node(int pId, int pInnovNum);
+		Node(Node::Type pType, int pId);
 		~Node();
 
 		int id;
@@ -15,8 +14,6 @@ class Node{
 		float value;
 
 		void load(std::vector<float> values, std::vector<float> weights);	
-
-		int innovNum;
 
 		void info();
 };

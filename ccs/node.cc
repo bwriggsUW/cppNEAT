@@ -2,9 +2,7 @@
 #include<iostream>
 #include<vector>
 
-Node::Node(int pId, Node::Type pType, int pInnovNum) : id(pId), type(pType), innovNum(pInnovNum) ,value(0.0){}
-
-Node::Node(int pId, int pInnovNum) : Node::Node(pId, Node::Type::HIDDEN, pInnovNum){}
+Node::Node(Node::Type pType, int pId) : id(pId), type(pType), value(0.0){}
 
 Node::~Node(){}
 
@@ -20,4 +18,5 @@ void Node::info(){
 	std::cout << "NODE INFO:" << std::endl;
 	std::cout << "id: " << this->id << std::endl;
 	std::cout << "type: " << this->type << std::endl;
+	std::cout << "value: " << this->value << std::endl;
 }
