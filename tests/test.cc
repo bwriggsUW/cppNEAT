@@ -75,6 +75,8 @@ int main(int argc, char* argv[]){
 	genome2->info();
 	std::cout << std::endl;
 
+	std::cout << Genome::compatibility(*genome1, *genome2, 0.5, 0.5, 0.5) << std::endl;
+
 	delete genome1;
 	delete genome2;
 	delete cd;

@@ -18,7 +18,7 @@ float Genome::compatibility(const Genome& genome1, const Genome& genome2, float 
 	int size1 = genome1.connectionGenes.size();
 	int size2 = genome2.connectionGenes.size();
 
-	const std::vector<Connection*>& smaller = (size1 < size2 ? genome1.connectionGenes : genome2.connectionGenes);
+	const std::vector<Connection*>& smaller = (size1 <= size2 ? genome1.connectionGenes : genome2.connectionGenes);
 	const std::vector<Connection*>& bigger = (size1 > size2 ? genome1.connectionGenes : genome2.connectionGenes); 
 	int smallerSize = size1 < size2 ? size1 : size2;
 	int biggerSize = size1 > size2 ? size1 : size2;
@@ -39,10 +39,10 @@ float Genome::compatibility(const Genome& genome1, const Genome& genome2, float 
 	std::vector<int> biggerInnovNums;
 	for(;(j < smallerSize) and (k < biggerSize);){
 		if(smaller[j]->innovNum == bigger[k]->innovNum){
-			smallerInnovNums.push_back(smaller[j++]->innovNum);
-			biggerInnovNums.push_back(bigger[k++]->innovNum);
 			numSharedGenes++;
 			totalWeightDiff += abs(smaller[j]->weight - bigger[k]->weight);
+			smallerInnovNums.push_back(smaller[j++]->innovNum);
+			biggerInnovNums.push_back(bigger[k++]->innovNum);
 		}else if(smaller[j]->innovNum > bigger[k]->innovNum){
 			smallerInnovNums.push_back(-1);
 			biggerInnovNums.push_back(bigger[k++]->innovNum);
